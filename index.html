@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fejlens felt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1A1A;--line:#1A1A1A;--paper:#FFFFFF;--soft:#F4F4F2;--hair:#D9D9D6;
+    --coral:#FF7369;--amber:#FFBE50;--blue:#3C6E9C;--gold:#D99A12;--grey:#5A5A57;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"IBM Plex Sans",system-ui,sans-serif;color:var(--ink);
+    background:var(--paper);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:22px 18px 40px}
+  h1{font-size:1.5rem;font-weight:700;margin:0 0 4px}
+  .lede{margin:0 0 18px;color:var(--grey);max-width:66ch;font-size:.97rem}
+  .lede b{color:var(--ink)}
+  .panel{border:1px solid var(--hair);background:var(--paper);border-radius:2px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--hair)}
+  .toolbar .group{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
+    background:var(--paper);font:inherit;font-weight:600;font-size:.9rem;color:var(--ink);
+    padding:7px 12px;border-radius:2px;cursor:pointer;transition:background .12s,color .12s;touch-action:manipulation}
+  .chip .dotmark{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+  .chip:hover{background:var(--soft)}
+  .chip.active,.chip.active:hover{background:var(--ink);color:#fff}
+  .spacer{flex:1 1 auto}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+  .seg button{border:0;border-left:1px solid var(--line);background:var(--paper);
+    font:inherit;font-weight:600;font-size:.9rem;color:var(--ink);padding:7px 16px;cursor:pointer;touch-action:manipulation}
+  .seg button:first-child{border-left:0}
+  .seg button.active{background:var(--ink);color:#fff}
+  .seg button.active.future{background:var(--amber);color:var(--ink)}
+  .btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;
+    font-weight:600;font-size:.9rem;padding:7px 14px;border-radius:2px;cursor:pointer;touch-action:manipulation}
+  .btn:hover{background:var(--soft)}
+  .addrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+  .addrow input{font:inherit;font-size:.9rem;padding:7px 10px;border:1px solid var(--hair);
+    border-radius:2px;min-width:180px;flex:1 1 200px}
+  .addrow input:focus{outline:2px solid var(--amber);outline-offset:0;border-color:var(--amber)}
+  .caption{padding:10px 14px;border-bottom:1px solid var(--hair);font-size:.88rem;color:var(--grey)}
+  .caption b{color:var(--ink)}
+  .stage{position:relative}
+  svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+  .axislabel{font-size:14px;font-weight:700;fill:var(--ink)}
+  .axislabel.muted{font-weight:600;fill:var(--grey);font-size:13px}
+  .gridlabel{font-size:12.5px;font-weight:600;fill:var(--ink)}
+  .handle{cursor:ew-resize}
+  .handle.locked{cursor:default;pointer-events:none}
+  .dim{opacity:.3}
+  .hidden{display:none}
+  .card{display:none;padding:12px 14px;border-top:1px solid var(--hair);background:var(--soft);font-size:.88rem}
+  .card.show{display:block}
+  .card h3{margin:0 0 10px;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--grey)}
+  .card ul{margin:0;padding:0;list-style:none;display:grid;gap:11px}
+  .card .lvl{display:block;font-weight:700;margin-bottom:4px}
+  .card textarea{width:100%;font:inherit;font-size:.85rem;border:1px solid var(--hair);border-radius:2px;
+    padding:6px 9px;resize:vertical;min-height:40px;background:var(--paper);color:var(--ink)}
+  .card textarea:focus{outline:2px solid var(--amber);outline-offset:0;border-color:var(--amber)}
+  .legend{display:flex;gap:18px;align-items:center;padding:9px 14px;border-top:1px solid var(--hair);font-size:.82rem;color:var(--grey);flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .swatch{width:14px;height:14px;border-radius:50%;background:var(--grey)}
+  .swatch.ring{background:transparent;border:2px dashed var(--grey)}
+  .note{padding:11px 14px;border-top:1px solid var(--hair);font-size:.88rem;color:var(--grey)}
+  .note b{color:var(--ink)}
+  .reflect{margin-top:18px;border-left:3px solid var(--coral);background:var(--soft);padding:14px 16px;border-radius:0 2px 2px 0}
+  .reflect h2{margin:0 0 6px;font-size:1rem;font-weight:700}
+  .reflect p{margin:0;font-size:.95rem;color:var(--grey)}
+  @media(max-width:560px){.chip,.seg button{font-size:.84rem;padding:6px 11px}h1{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Fejlens felt</h1>
+  <p class="lede">Hver fejl rammer på fire niveauer. <b>Din opgave er at vurdere fejlens fremtidsfaktor:</b> hvor ender hvert niveau over tid? Placer fejlen i <b>Nu</b>, skift til <b>Fremtid</b>, og træk hvert niveau derhen. De tre cases er <b>vores eksempler</b> på, hvordan det kunne se ud, ikke facit.</p>
+
+  <div class="panel">
+    <div class="toolbar">
+      <div class="group" id="tray"></div>
+      <span class="spacer"></span>
+      <div class="seg" role="group" aria-label="Tidstilstand">
+        <button id="modeNow" class="active">Nu</button>
+        <button id="modeFut" class="future">Fremtid</button>
+      </div>
+      <button class="btn" id="pdfBtn">Gem som PDF</button>
+      <button class="btn" id="resetBtn">Nulstil</button>
+    </div>
+    <div class="toolbar">
+      <div class="addrow">
+        <input id="ownInput" type="text" maxlength="40" placeholder="Skriv din egen fejl, fx 'glemt sikkerhedstjek'">
+        <button class="btn" id="addBtn">Tilføj egen fejl</button>
+      </div>
+    </div>
+
+    <div class="caption" id="caption"></div>
+
+    <div class="stage">
+      <svg id="plot" viewBox="0 0 820 600" role="img" aria-label="Felt med fire niveauer langs slagkraft og en akse fra negativ til positiv indvirkning">
+        <g id="grid" stroke="var(--hair)" stroke-width="1">
+          <line x1="110" y1="130" x2="780" y2="130"/>
+          <line x1="110" y1="250" x2="780" y2="250"/>
+          <line x1="110" y1="360" x2="780" y2="360"/>
+          <line x1="110" y1="470" x2="780" y2="470"/>
+        </g>
+        <g stroke="var(--line)" stroke-width="3" fill="none">
+          <line x1="445" y1="520" x2="445" y2="66"/>
+          <line x1="118" y1="520" x2="772" y2="520"/>
+        </g>
+        <g fill="var(--line)">
+          <polygon points="445,52 434,80 456,80"/>
+          <polygon points="110,520 132,509 132,531"/>
+          <polygon points="780,520 758,509 758,531"/>
+        </g>
+        <text class="axislabel" x="445" y="36" text-anchor="middle">Slagkraft</text>
+        <text class="axislabel muted" x="124" y="546" text-anchor="start">Negativ indvirkning</text>
+        <text class="axislabel muted" x="766" y="546" text-anchor="end">Positiv indvirkning</text>
+        <text class="gridlabel" x="104" y="134" text-anchor="end">Globalt</text>
+        <text class="gridlabel" x="104" y="254" text-anchor="end">Samfund</text>
+        <text class="gridlabel" x="104" y="364" text-anchor="end">Kulturelt</text>
+        <text class="gridlabel" x="104" y="474" text-anchor="end">Individer</text>
+
+        <polyline id="nowProfile" fill="none" stroke-width="2" stroke-opacity=".55"/>
+        <polyline id="futProfile" fill="none" stroke-width="2" stroke-opacity=".6" stroke-dasharray="7 6"/>
+        <g id="nowDots"></g>
+        <g id="futDots"></g>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <span><span class="swatch"></span> Nu</span>
+      <span><span class="swatch ring"></span> Fremtid (stiplet)</span>
+    </div>
+
+    <div class="card" id="card">
+      <h3 id="cardhead"></h3>
+      <ul id="cardlist"></ul>
+    </div>
+
+    <div class="note">Vælg en case. I <b>Nu</b> trækker du nu-punkterne. I <b>Fremtid</b> trækker du fremtidspunkterne og skriver din begrundelse for hvert niveau. Samme fejl kan ligge negativt på ét niveau og positivt på et andet.</div>
+  </div>
+
+  <div class="reflect">
+    <h2>Refleksion</h2>
+    <p>Tilføj en fejl fra din egen arbejdsplads. Placer den på alle fire niveauer i Nu, og vurder så i Fremtid hvor hvert niveau ender. Skriv din begrundelse, og gem din vurdering som PDF.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var ROWS=[
+    {key:'globalt', name:'Globalt',  y:130},
+    {key:'samfund', name:'Samfund',  y:250},
+    {key:'kulturelt',name:'Kulturelt',y:360},
+    {key:'individer',name:'Individer',y:470}
+  ];
+  var CX=445, SPAN=300;
+  function clampV(v){return Math.max(-1,Math.min(1,v));}
+  function vToX(v){return CX+clampV(v)*SPAN;}
+  function xToV(x){return clampV((x-CX)/SPAN);}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  var PRESETS={
+    ddraaber:{name:'D-dråberne',color:'var(--coral)',m:{
+      globalt:{v:0.00,dv:0.20,why:'Sjælden case i international litteratur. Lille positiv læring over tid.'},
+      samfund:{v:-0.40,dv:0.70,why:'Sundhedsskræk og myndighedsindsats i situationen. Skærpet tilsyn vender den positiv.'},
+      kulturelt:{v:-0.20,dv:0.10,why:'Tilliden til kosttilskud rystes. Nuanceres langsomt.'},
+      individer:{v:-0.85,dv:0.15,why:'Forgiftede børn og familier. Bedring over tid, men forbliver negativ.'}}},
+    cykel:{name:'Cykelulykken',color:'var(--blue)',m:{
+      globalt:{v:0.00,dv:0.00,why:'Ingen global rækkevidde. Hændelsen er lokal.'},
+      samfund:{v:-0.10,dv:0.10,why:'Begrænset samfundsmæssig effekt.'},
+      kulturelt:{v:-0.30,dv:0.20,why:'Peger på en passivitetskultur blandt de forbipasserende.'},
+      individer:{v:-0.60,dv:0.45,why:'Negativ i situationen. Bliver til læring og fortælling hos den studerende.'}}},
+    hancock:{name:'Hancock',color:'var(--gold)',m:{
+      globalt:{v:0.10,dv:0.60,why:'Bliver en ikonisk anekdote fortalt verden over.'},
+      samfund:{v:0.10,dv:0.20,why:'Beskeden bredere effekt.'},
+      kulturelt:{v:0.30,dv:0.40,why:'Styrker en jazzkultur der dyrker åbenhed over for fejl.'},
+      individer:{v:-0.40,dv:1.10,why:'I situationen en pinlig fejl. Bliver hans kreative gennembrud.'}}}
+  };
+  var ORDER=['ddraaber','cykel','hancock'];
+
+  var cases={}, selected=null, mode='nu', ownCount=0;
+  var futDisp={}, nowDots={}, futDots={};
+
+  var svg=document.getElementById('plot');
+  var nowDotsG=document.getElementById('nowDots');
+  var futDotsG=document.getElementById('futDots');
+  var nowProfile=document.getElementById('nowProfile');
+  var futProfile=document.getElementById('futProfile');
+  var tray=document.getElementById('tray');
+  var caption=document.getElementById('caption');
+  var card=document.getElementById('card');
+  var cardhead=document.getElementById('cardhead');
+  var cardlist=document.getElementById('cardlist');
+  var modeNow=document.getElementById('modeNow');
+  var modeFut=document.getElementById('modeFut');
+
+  function toSvg(evt){var p=svg.createSVGPoint();p.x=evt.clientX;p.y=evt.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());}
+
+  function seedPresets(){
+    ORDER.forEach(function(id){
+      var src=PRESETS[id], now={}, fut={}, note={};
+      ROWS.forEach(function(r){
+        now[r.key]=src.m[r.key].v;
+        fut[r.key]=clampV(src.m[r.key].v+src.m[r.key].dv);
+        note[r.key]=src.m[r.key].why;
+      });
+      cases[id]={name:src.name,color:src.color,preset:true,seeded:true,now:now,future:fut,note:note};
+    });
+  }
+
+  function buildTray(){
+    tray.innerHTML='';
+    Object.keys(cases).forEach(function(id){
+      var c=cases[id];
+      var b=document.createElement('button');
+      b.className='chip'+(id===selected?' active':''); b.dataset.id=id;
+      b.innerHTML='<span class="dotmark" style="background:'+c.color+'"></span>'+esc(c.name);
+      b.addEventListener('click',function(){ select(id); });
+      tray.appendChild(b);
+    });
+  }
+
+  function mkDot(kind,r,color){
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('class','handle'); c.setAttribute('r','10'); c.setAttribute('cy',r.y);
+    c.setAttribute('stroke-width','2.5'); c.dataset.key=r.key;
+    if(kind==='now'){ c.setAttribute('fill',color); c.setAttribute('stroke','#fff'); }
+    else { c.setAttribute('fill','#fff'); c.setAttribute('stroke',color); c.setAttribute('stroke-dasharray','3 3'); }
+    attachDrag(c,r.key,kind);
+    return c;
+  }
+
+  function buildLayer(){
+    var c=cases[selected];
+    nowDotsG.innerHTML=''; futDotsG.innerHTML=''; nowDots={}; futDots={};
+    nowProfile.setAttribute('stroke',c.color); futProfile.setAttribute('stroke',c.color);
+    ROWS.forEach(function(r){
+      var n=mkDot('now',r,c.color); nowDotsG.appendChild(n); nowDots[r.key]=n;
+      var f=mkDot('fut',r,c.color); futDotsG.appendChild(f); futDots[r.key]=f;
+    });
+    futDisp={}; ROWS.forEach(function(r){ futDisp[r.key]=c.future[r.key]; });
+  }
+
+  function renderNow(){
+    var c=cases[selected], pts=[];
+    ROWS.forEach(function(r){ var x=vToX(c.now[r.key]); nowDots[r.key].setAttribute('cx',x); pts.push(x+','+r.y); });
+    nowProfile.setAttribute('points',pts.join(' '));
+  }
+  function renderFut(){
+    var pts=[];
+    ROWS.forEach(function(r){ var fx=vToX(futDisp[r.key]); futDots[r.key].setAttribute('cx',fx); pts.push(fx+','+r.y); });
+    futProfile.setAttribute('points',pts.join(' '));
+  }
+
+  function attachDrag(node,key,kind){
+    var dragging=false;
+    node.addEventListener('pointerdown',function(e){
+      if(kind==='now'&&mode!=='nu') return;
+      if(kind==='fut'&&mode!=='fremtid') return;
+      dragging=true; node.setPointerCapture(e.pointerId); e.preventDefault();
+    });
+    node.addEventListener('pointermove',function(e){
+      if(!dragging) return;
+      var v=xToV(toSvg(e).x), c=cases[selected];
+      if(kind==='now'){ c.now[key]=v; renderNow(); }
+      else { c.future[key]=v; futDisp[key]=v; renderFut(); }
+    });
+    function stop(e){ if(dragging){dragging=false; try{node.releasePointerCapture(e.pointerId);}catch(_){}} }
+    node.addEventListener('pointerup',stop); node.addEventListener('pointercancel',stop);
+  }
+
+  function animateFut(){
+    var c=cases[selected], start={}, t0=null;
+    ROWS.forEach(function(r){ start[r.key]=futDisp[r.key]; });
+    function step(ts){
+      if(t0===null)t0=ts;
+      var k=Math.min(1,(ts-t0)/520), e=1-Math.pow(1-k,3);
+      ROWS.forEach(function(r){ futDisp[r.key]=start[r.key]+(c.future[r.key]-start[r.key])*e; });
+      renderFut();
+      if(k<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function fillCard(){
+    var c=cases[selected];
+    cardhead.textContent = c.preset
+      ? 'Vores eksempel p\u00e5 en mulig fremtid \u00B7 ikke et facit'
+      : 'Din vurdering \u00B7 hvad er fremtidsfaktoren?';
+    cardlist.innerHTML='';
+    ROWS.forEach(function(r){
+      var li=document.createElement('li');
+      var lab=document.createElement('label');
+      lab.className='lvl'; lab.style.color=c.color; lab.textContent=r.name;
+      var ta=document.createElement('textarea');
+      ta.value=c.note[r.key]||'';
+      ta.placeholder= c.preset ? '' : 'Begrund hvorfor '+r.name.toLowerCase()+' flytter sig (eller ikke).';
+      ta.addEventListener('input',function(){ cases[selected].note[r.key]=ta.value; });
+      li.appendChild(lab); li.appendChild(ta); cardlist.appendChild(li);
+    });
+  }
+
+  function applyMode(){
+    modeNow.classList.toggle('active',mode==='nu');
+    modeFut.classList.toggle('active',mode==='fremtid');
+    var fut=(mode==='fremtid');
+    futProfile.classList.toggle('hidden',!fut);
+    futDotsG.classList.toggle('hidden',!fut);
+    nowDotsG.classList.toggle('dim',fut);
+    nowProfile.classList.toggle('dim',fut);
+    ROWS.forEach(function(r){
+      nowDots[r.key].classList.toggle('locked',fut);
+      futDots[r.key].classList.toggle('locked',!fut);
+    });
+    card.classList.toggle('show',fut);
+    caption.innerHTML='Viser: <b>'+esc(cases[selected].name)+'</b> &middot; redigerer: <b>'+(fut?'Fremtid':'Nu')+'</b>';
+  }
+
+  function setMode(m){
+    if(m===mode) return;
+    var c=cases[selected];
+    if(m==='fremtid'){
+      if(!c.seeded){ ROWS.forEach(function(r){ c.future[r.key]=c.now[r.key]; }); c.seeded=true; }
+      futDisp={}; ROWS.forEach(function(r){ futDisp[r.key]=c.now[r.key]; });
+      mode='fremtid'; applyMode(); fillCard(); renderNow(); animateFut();
+    } else {
+      mode='nu'; applyMode(); renderNow();
+      futDisp={}; ROWS.forEach(function(r){ futDisp[r.key]=c.future[r.key]; }); renderFut();
+    }
+  }
+  modeNow.addEventListener('click',function(){ setMode('nu'); });
+  modeFut.addEventListener('click',function(){ setMode('fremtid'); });
+
+  function select(id){
+    selected=id; mode='nu';
+    buildTray(); buildLayer(); applyMode(); renderNow(); renderFut();
+  }
+
+  function addOwn(){
+    var inp=document.getElementById('ownInput'), v=(inp.value||'').trim();
+    if(!v){inp.focus();return;}
+    ownCount++; var id='own'+ownCount, now={}, fut={}, note={};
+    ROWS.forEach(function(r){ now[r.key]=0; fut[r.key]=0; note[r.key]=''; });
+    var palette=['#1A1A1A','#7A4FA3','#2E8B7A','#B5651D'];
+    cases[id]={name:v,color:palette[(ownCount-1)%palette.length],preset:false,seeded:false,now:now,future:fut,note:note};
+    inp.value=''; select(id);
+  }
+  document.getElementById('addBtn').addEventListener('click',addOwn);
+  document.getElementById('ownInput').addEventListener('keydown',function(e){ if(e.key==='Enter') addOwn(); });
+  document.getElementById('resetBtn').addEventListener('click',function(){
+    cases={}; ownCount=0; seedPresets(); select(ORDER[0]);
+  });
+
+  // ---- PDF via ren udskriftsvisning ----
+  var PRINTCSS=':root{--ink:#1A1A1A;--line:#1A1A1A;--paper:#FFFFFF;--soft:#F4F4F2;--hair:#D9D9D6;'
+    +'--coral:#FF7369;--amber:#FFBE50;--blue:#3C6E9C;--gold:#D99A12;--grey:#5A5A57;}'
+    +'*{box-sizing:border-box}body{font-family:"IBM Plex Sans",system-ui,sans-serif;color:var(--ink);margin:26px;line-height:1.4}'
+    +'h1{font-size:20px;margin:0 0 2px}.sub{color:var(--grey);margin:0 0 14px;font-size:13px}'
+    +'.plot{border:1px solid var(--hair);padding:10px;border-radius:2px}.plot svg{width:100%;height:auto;display:block}'
+    +'h2{font-size:14px;margin:18px 0 8px}'
+    +'.bg{padding:7px 0;border-bottom:1px solid var(--hair);font-size:13px}'
+    +'.bg b{display:block;margin-bottom:2px}.bg i{color:var(--grey)}'
+    +'.axislabel{font:700 14px "IBM Plex Sans",sans-serif;fill:var(--ink)}'
+    +'.axislabel.muted{font-weight:600;fill:var(--grey);font-size:13px}'
+    +'.gridlabel{font:600 12.5px "IBM Plex Sans",sans-serif;fill:var(--ink)}'
+    +'.dim{opacity:.4}@media print{body{margin:14mm}.plot{border:none;padding:0}}';
+
+  function snapshotSVG(){
+    var clone=svg.cloneNode(true);
+    clone.removeAttribute('style');
+    clone.setAttribute('width','720'); clone.setAttribute('height','527');
+    Array.prototype.forEach.call(clone.querySelectorAll('.hidden'),function(e){ e.classList.remove('hidden'); });
+    Array.prototype.forEach.call(clone.querySelectorAll('.locked'),function(e){ e.classList.remove('locked'); });
+    return new XMLSerializer().serializeToString(clone);
+  }
+
+  function buildPrintHTML(){
+    var c=cases[selected];
+    var date=new Date().toLocaleDateString('da-DK');
+    var rows=ROWS.map(function(r){
+      var n=(c.note[r.key]||'').trim();
+      return '<div class="bg"><b style="color:'+c.color+'">'+esc(r.name)+'</b>'
+        +(n?esc(n):'<i>ingen begrundelse</i>')+'</div>';
+    }).join('');
+    var kind=c.preset?'vores eksempel':'din vurdering';
+    return '<!doctype html><html lang="da"><head><meta charset="utf-8"><title>'+esc(c.name)+'</title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">'
+      +'<style>'+PRINTCSS+'</style></head><body>'
+      +'<h1>Fejlens felt</h1><p class="sub">'+esc(c.name)+' \u00B7 '+kind+' \u00B7 '+date+'</p>'
+      +'<div class="plot">'+snapshotSVG()+'</div>'
+      +'<h2>Begrundelser for fremtidsfaktoren</h2>'+rows
+      +'<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},400);};</scr'+'ipt>'
+      +'</body></html>';
+  }
+
+  document.getElementById('pdfBtn').addEventListener('click',function(){
+    var w=window.open('','_blank');
+    if(!w){ alert('Tillad pop op-vinduer for at gemme som PDF.'); return; }
+    w.document.open(); w.document.write(buildPrintHTML()); w.document.close();
+  });
+
+  seedPresets(); select(ORDER[0]);
+})();
+</script>
+</body>
+</html>
