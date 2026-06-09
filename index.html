@@ -19,7 +19,23 @@
   h1{font-size:1.5rem;font-weight:700;margin:0 0 4px}
   .lede{margin:0 0 18px;color:var(--grey);max-width:66ch;font-size:.97rem}
   .lede b{color:var(--ink)}
-  .panel{border:1px solid var(--hair);background:var(--paper);border-radius:2px}
+  .panel{border:1px solid var(--hair);background:var(--paper);border-radius:2px;position:relative}
+  .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn.primary:hover{background:#000}
+  .btn.help{font-weight:700;padding:7px 12px}
+  .overlay{position:absolute;inset:0;background:rgba(255,255,255,.93);display:flex;align-items:center;justify-content:center;padding:18px;z-index:20}
+  .overlay.hidden{display:none}
+  .guide{background:var(--paper);border:1px solid var(--line);border-radius:3px;max-width:540px;width:100%;
+    padding:22px 22px 18px;box-shadow:0 10px 34px rgba(0,0,0,.14);max-height:100%;overflow:auto}
+  .guide h2{margin:0 0 4px;font-size:1.15rem;font-weight:700}
+  .guide .intro{margin:0 0 16px;color:var(--grey);font-size:.92rem}
+  .guide ol{margin:0 0 18px;padding:0;list-style:none;display:grid;gap:14px}
+  .guide li{display:flex;gap:13px;align-items:flex-start}
+  .guide .num{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;
+    font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+  .guide .body{font-size:.93rem;padding-top:3px}
+  .guide .body b{font-weight:700}
+  .guide .foot{display:flex;justify-content:flex-end}
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--hair)}
   .toolbar .group{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
@@ -76,7 +92,7 @@
 <body>
 <div class="wrap">
   <h1>Fejlens positive og negative indvirkning</h1>
-  <p class="lede">Hver fejl rammer på fire niveauer. <b>Din opgave er at vurdere fejlens fremtidsfaktor:</b> hvor ender hvert niveau over tid? Placer fejlen i <b>Nu</b>, skift til <b>Fremtid</b>, og træk hvert niveau derhen. De tre cases er <b>vores eksempler</b> på, hvordan det kunne se ud, ikke facit.</p>
+  <p class="lede">En fejl rammer på fire niveauer, fra det enkelte menneske til hele verden. Vurder, om den virker <b>negativt eller positivt</b> på hvert niveau nu, og hvor det ender på sigt. De tre cases er <b>vores eksempler</b>, ikke facitter.</p>
 
   <div class="panel">
     <div class="toolbar">
@@ -86,6 +102,7 @@
         <button id="modeNow" class="active">Nu</button>
         <button id="modeFut" class="future">Fremtid</button>
       </div>
+      <button class="btn help" id="helpBtn" title="Vis vejledning" aria-label="Vis vejledning">?</button>
       <button class="btn" id="pdfBtn">Gem som PDF</button>
       <button class="btn" id="resetBtn">Nulstil</button>
     </div>
@@ -141,6 +158,19 @@
     </div>
 
     <div class="note">Vælg en case. I <b>Nu</b> trækker du nu-punkterne. I <b>Fremtid</b> trækker du fremtidspunkterne og skriver din begrundelse for hvert niveau. Samme fejl kan ligge negativt på ét niveau og positivt på et andet.</div>
+
+    <div class="overlay" id="overlay">
+      <div class="guide" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+        <h2 id="guideTitle">Sådan bruger du modellen</h2>
+        <p class="intro">En fejl placeres på fire niveauer og kan flytte sig over tid. Du gør det i tre trin:</p>
+        <ol>
+          <li><span class="num">1</span><span class="body">Vælg en fejl i bjælken, eller skriv din egen og tryk <b>Tilføj egen fejl</b>.</span></li>
+          <li><span class="num">2</span><span class="body">Bliv i <b>Nu</b>, og træk hvert af de fire punkter vandret hen, hvor fejlen ramte på det niveau. Venstre er negativt, højre er positivt. Punkterne kan kun bevæges til siden.</span></li>
+          <li><span class="num">3</span><span class="body">Skift til <b>Fremtid</b>, træk punkterne hen, hvor de ender over tid, og skriv din begrundelse for hvert niveau. Gem til sidst med <b>Gem som PDF</b>.</span></li>
+        </ol>
+        <div class="foot"><button class="btn primary" id="guideClose">Kom i gang</button></div>
+      </div>
+    </div>
   </div>
 
   <div class="reflect">
@@ -402,6 +432,11 @@
     if(!w){ alert('Tillad pop op-vinduer for at gemme som PDF.'); return; }
     w.document.open(); w.document.write(buildPrintHTML()); w.document.close();
   });
+
+  // ---- vejledning ----
+  var overlay=document.getElementById('overlay');
+  document.getElementById('guideClose').addEventListener('click',function(){ overlay.classList.add('hidden'); });
+  document.getElementById('helpBtn').addEventListener('click',function(){ overlay.classList.remove('hidden'); });
 
   seedPresets(); select(ORDER[0]);
 })();
